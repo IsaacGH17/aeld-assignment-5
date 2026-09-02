@@ -6,7 +6,7 @@
 ##############################################################
 
 # Commit hash of the assignments-3-and-later repository main branch
-AESD_ASSIGNMENTS_VERSION = 9410f453f0739f1140b42ca6a1963010e97711ce
+AESD_ASSIGNMENTS_VERSION = 1ecfe000830e9f668032adf0b44ebe309ca89aff
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
