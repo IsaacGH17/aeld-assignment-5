@@ -1,0 +1,58 @@
+#!/bin/sh
+mode="664"
+group="root"
+
+start() {
+    echo "Loading drivers"
+    echo "Loading scull..."
+    /sbin/modprobe scull 2>/dev/null || /sbin/insmod /lib/modules/$(uname -r)/extra/scull.ko
+    major_scull=$(awk '$2=="scull" {print $1}' /proc/devices)
+    if [ -n "$major_scull" ]; then
+        rm -f /dev/scull /dev/scull[0-3]
+        mknod /dev/scull0 c $major_scull 0
+        mknod /dev/scull1 c $major_scull 1
+        mknod /dev/scull2 c $major_scull 2
+        mknod /dev/scull3 c $major_scull 3
+        ln -sf scull0 /dev/scull
+        chgrp $group /dev/scull[0-3] /dev/scull
+        chmod $mode /dev/scull[0-3] /dev/scull
+    fi
+    echo "Loading faulty..."
+    /sbin/modprobe faulty 2>/dev/null || /sbin/insmod /lib/modules/$(uname -r)/extra/faulty.ko
+    major_faulty=$(awk '$2=="faulty" {print $1}' /proc/devices)
+    if [ -n "$major_faulty" ]; then
+        rm -f /dev/faulty
+        mknod /dev/faulty c $major_faulty 0
+        chgrp $group /dev/faulty
+        chmod $mode /dev/faulty
+    fi
+    echo "Loading hello..."
+    /sbin/modprobe hello 2>/dev/null || /sbin/insmod /lib/modules/$(uname -r)/extra/hello.ko
+}
+
+stop() {
+    echo "Unloading drivers..."
+    echo "Removing hello..."
+    /sbin/rmmod hello 2>/dev/null || true
+    echo "Removing faulty..."
+    rm -f /dev/faulty
+    /sbin/rmmod faulty 2>/dev/null || true
+    echo "Removing scull..."
+    rm -f /dev/scull /dev/scull[0-3]
+    /sbin/rmmod scull 2>/dev/null || true
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

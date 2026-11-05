@@ -1,0 +1,5 @@
+config BR2_PACKAGE_LDD
+	bool "ldd kernel modules"
+	help
+	  Includes the ldd3 kernel modules scull and misc-modules
+	  from the assignment7 repo in the root filesystem.
