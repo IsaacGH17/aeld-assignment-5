@@ -1,0 +1,24 @@
+#!/bin/sh
+# Carga el modulo aesdchar ANTES de S99aesdsocket (el server abre /dev/aesdchar).
+# El nodo /dev/aesdchar lo crea el propio driver via class_create/device_create.
+case "$1" in
+    start)
+        echo "Loading aesdchar..."
+        /sbin/modprobe aesdchar 2>/dev/null || \
+            /sbin/insmod /lib/modules/$(uname -r)/extra/aesdchar.ko
+        ;;
+    stop)
+        echo "Unloading aesdchar..."
+        /sbin/rmmod aesdchar 2>/dev/null || true
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
